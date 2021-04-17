@@ -28,6 +28,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.ScoreFragmentBinding
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
  * Fragment where the final score is shown, after the game is over
@@ -36,6 +37,8 @@ class ScoreFragment : Fragment() {
 
     private lateinit var viewModelFactory: ScoreViewModelFactory
     private lateinit var viewModel: ScoreViewModel
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -51,6 +54,8 @@ class ScoreFragment : Fragment() {
                 false
         )
         binding.lifecycleOwner = this
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
 
         // Get args using by navArgs property delegate
         val scoreFragmentArgs by navArgs<ScoreFragmentArgs>()
@@ -74,6 +79,12 @@ class ScoreFragment : Fragment() {
     }
 
     private fun onPlayAgain() {
+        //tracking
+        val bundle = Bundle().apply {
+            putString("event_score_fragment", "play again")
+        }
+        firebaseAnalytics.logEvent("score_fragment", bundle)
+
         findNavController().navigate(ScoreFragmentDirections.actionRestart())
     }
 }

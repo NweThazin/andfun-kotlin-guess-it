@@ -25,21 +25,33 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.TitleFragmentBinding
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
  * Fragment for the starting or title screen of the app
  */
 class TitleFragment : Fragment() {
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         val binding: TitleFragmentBinding = DataBindingUtil.inflate(
                 inflater, R.layout.title_fragment, container, false)
 
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
+
         binding.playGameButton.setOnClickListener {
+            performTracking()
             findNavController().navigate(TitleFragmentDirections.actionTitleToGame())
         }
         return binding.root
+    }
+
+    private fun performTracking() {
+        val bundle = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_NAME, "click pay game button")
+        }
+        firebaseAnalytics.logEvent("title_fragment", bundle)
     }
 }

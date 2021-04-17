@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.GameFragmentBinding
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
  * Fragment where the game is played
@@ -42,6 +43,8 @@ class GameFragment : Fragment() {
     private lateinit var binding: GameFragmentBinding
 
     private lateinit var viewModel: GameViewModel
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -56,6 +59,8 @@ class GameFragment : Fragment() {
         // To make your data binding lifecycle aware and to have it play nicely with LiveData,
         // you need to call binding.setLifecycleOwner
         binding.lifecycleOwner = this
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
 
         // 10-4 : 4.Create and initialize a GameViewModel, using ViewModelProvider(). Add a log statement
         Log.i("GameViewModel", "ViewModelProvider created!!")
@@ -96,6 +101,12 @@ class GameFragment : Fragment() {
      * Called when the game is finished
      */
     private fun gameFinished() {
+        //tracking
+        val bundle = Bundle().apply {
+            putString("event_game_fragment", "game finished")
+        }
+        firebaseAnalytics.logEvent("game_fragment", bundle)
+
         val action = GameFragmentDirections.actionGameToScore(viewModel.score.value ?: 0)
         findNavController(this).navigate(action)
     }
